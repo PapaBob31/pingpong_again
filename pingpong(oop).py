@@ -6,15 +6,12 @@ pygame.mixer.init()
 pygame.display.set_caption("ping pong")
 win = pygame.display.set_mode((780, 500))
 font = pygame.font.SysFont("algerian", 100)
-text = pygame.font.SysFont("verdana", 15)
+text = pygame.font.SysFont("verdana", 20)
 game_score = pygame.font.SysFont("euphemia", 50)
 run = True
 game_menu = True
 game_start = False
-menu_x = 150
-menu_y = 300
 versus_computer = False
-against_wall = False
 multiplayer = False
 serve = True
 white = (255, 255, 255)
@@ -194,14 +191,14 @@ class gameBall:
                     self.vel_x = self.vel
                     self.vel_y = self.vel
 
-
+menu_x = 180
+menu_y = 300
 def display_game_menu():
     win.fill((0, 0, 0))
     win.blit(font.render("PING PONG", True, white), (150, 50))
-    win.blit(text.render("VS Computer", True, white), (170, 310))
-    win.blit(text.render("Against the wall", True, white), (370, 310))
-    win.blit(text.render("MULTIPLAYER", True, white), (570, 310))
-    pygame.draw.rect(win, white, (menu_x, menu_y, 150, 50), 2)
+    win.blit(text.render("VS Computer", True, white), (200, 310))
+    win.blit(text.render("MULTIPLAYER", True, white), (400, 310))
+    pygame.draw.rect(win, white, (menu_x, menu_y, 180, 50), 2)
 
 computer = computerPlayer()
 ball = gameBall()
@@ -216,25 +213,21 @@ while run:
         if event.type == pygame.KEYDOWN:
             if game_menu:
                 if event.key == pygame.K_LEFT:
-                    if menu_x != 150:
+                    if menu_x != 180:
                         menu_x -= 200
                     else:
-                        menu_x = 550
+                        menu_x = 380
                 if event.key == pygame.K_RIGHT:
-                    if menu_x != 550:
+                    if menu_x != 380:
                         menu_x += 200
                     else:
-                        menu_x = 150
+                        menu_x = 180
                 if event.key == pygame.K_x:
-                    if menu_x == 150:
+                    if menu_x == 180:
                         versus_computer = True
                         game_start = True
                         game_menu = False
-                    if menu_x == 350:
-                        against_wall = True
-                        game_start = True
-                        game_menu = False
-                    if menu_x == 550:
+                    if menu_x == 380:
                         multiplayer = True
                         game_start = True
                         game_menu = False
@@ -258,11 +251,10 @@ while run:
                     serve = False
 
         win.fill((0, 0, 0))
-        if versus_computer or multiplayer:
-            win.blit(game_score.render(str(left_score), True, white), (310, 5))
-            win.blit(game_score.render(str(right_score), True, white), (450, 5))
-            for num in range(5, 495, 55):
-                pygame.draw.rect(win, white, (398, num, 5, 50))
+        win.blit(game_score.render(str(left_score), True, white), (310, 5))
+        win.blit(game_score.render(str(right_score), True, white), (450, 5))
+        for num in range(5, 495, 55):
+            pygame.draw.rect(win, white, (398, num, 5, 50))
 
         if versus_computer:
             player1.draw()
@@ -278,28 +270,6 @@ while run:
                     computer.random_no = random.randrange(0, 90, 10)
             ball.collision_with(computer)
             ball.collision_with_walls_movement()
-
-        elif against_wall:
-            player1.draw()
-            player1.move()
-            ball.draw()
-            ball.move()
-            ball.collision_with(player1)
-            ball.collision_with_walls_movement()
-            if ball.x - ball.radius <= 0:
-                pygame.mixer.Sound("bounce.mp3").play()
-                if ball.vel_y > 0:
-                    ball.vel_x = ball.vel
-                    ball.vel_y = ball.vel
-                elif ball.vel_y < 0:
-                    ball.vel_x = ball.vel
-                    ball.vel_y = -ball.vel
-                elif ball.vel_y == 0:
-                    ball.vel_x = ball.vel
-            if ball.x + ball.radius >= 780:
-                win.fill((225, 0, 0))
-                reset = True
-                serve = True
 
         elif multiplayer:
             player1.draw()

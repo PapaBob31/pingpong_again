@@ -21,6 +21,7 @@ white = (255, 255, 255)
 left_score = 0
 right_score = 0
 reset = False
+just_started = False
 
 
 class player:
@@ -63,9 +64,9 @@ class computerPlayer:
         self.y = 180
         self.width = 15
         self.height = 120
-        self.vel = 15
+        self.vel = 10
         self.random_no = random.randrange(0, 90, 10)
-        self.random_vel = 0
+        self.random_vel = 10
         self.in_range = False
 
     def draw(self):
@@ -81,22 +82,30 @@ class computerPlayer:
             if ball.y in range(self.y+40, self.y+80) and ball.vel_y == 0:
                 if self.y > 0 and self.random_vel < 0:
                     self.y += self.random_vel
-                    print(self.random_vel)
                     self.in_range = True
                 if self.y + self.height < 500 and self.random_vel > 0:
                     self.y += self.random_vel
-                    print(self.random_vel)
                     self.in_range = True
             elif ball.y not in range(self.y, self.y+121) or ball.vel_y != 0:
                 self.in_range = False
-                
+           
             if not self.in_range:
-                if ball.y < self.y + self.random_no:
-                    if self.y > 0: 
-                        self.y -= self.vel
-                if ball.y > self.y + self.random_no:
-                    if self.y + self.height < 500:
-                        self.y += self.vel
+                if ball.hit_top_wall:
+                    if self.y < 310 + self.random_no:
+                        if self.y + self.height < 500:
+                            self.y += self.vel
+                if ball.hit_bottom_wall:
+                    if self.y + self.random_no > 60:
+                        if self.y > 0:
+                            self.y -= self.vel
+                else:
+                    if ball.y < self.y + self.random_no:
+                        if self.y > 0: 
+                            self.y -= self.vel
+                    if ball.y > self.y + self.random_no:
+                        if self.y + self.height < 500:
+                            self.y += self.vel
+
             
     def reset_position(self):
         self.x = 35
@@ -111,6 +120,8 @@ class gameBall:
         self.vel_x = 0
         self.vel_y = 0
         self.vel = 15
+        self.hit_top_wall = False
+        self.hit_bottom_wall = False
 
     def draw(self):
         pygame.draw.circle(win, (100, 255, 255), (self.x, self.y), self.radius)
@@ -123,6 +134,8 @@ class gameBall:
         global serve, left_score, right_score, reset
         if self.y - self.radius == 0:
             pygame.mixer.Sound("bounce.mp3").play()
+            if self.vel_x < 0 and self.x > 50:
+                self.hit_top_wall = True
             if self.vel_x < 0:
                 self.vel_x = -self.vel
                 self.vel_y = self.vel
@@ -132,6 +145,8 @@ class gameBall:
 
         if self.y + self.radius == 500:
             pygame.mixer.Sound("bounce.mp3").play()
+            if self.vel_x < 0 and self.x > 50:
+                self.hit_bottom_wall = True
             if self.vel_x < 0:
                 self.vel_x = -self.vel
                 self.vel_y = -self.vel
@@ -166,6 +181,9 @@ class gameBall:
 
         elif player == player2 or player == computer:
             if player.x + player.width == self.x - self.radius:
+                if self.y in range(player.y, player.y + 121):
+                    self.hit_top_wall = False
+                    self.hit_bottom_wall = False
                 if self.y in range(player.y, player.y + 40):
                     self.vel_x = self.vel
                     self.vel_y = -self.vel

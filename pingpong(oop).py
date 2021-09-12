@@ -92,7 +92,7 @@ class computerPlayer:
                         if self.y + self.height < 500:
                             self.y += self.vel
                 if ball.hit_bottom_wall:
-                    if self.y + self.random_no > 60:
+                    if self.y > 60 - self.random_no:
                         if self.y > 0:
                             self.y -= self.vel
                 else:
@@ -102,7 +102,6 @@ class computerPlayer:
                     if ball.y > self.y + self.random_no:
                         if self.y + self.height < 500:
                             self.y += self.vel
-
             
     def reset_position(self):
         self.x = 35
